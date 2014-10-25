@@ -5,5 +5,11 @@
             "name": "Robert Burnfield",
             "email": "robert.burnfield@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {"WordPressHMVC\\": "src/"}
+    },
+    "require": {
+        "pimple/pimple": "~3.0"
+    }
 }
