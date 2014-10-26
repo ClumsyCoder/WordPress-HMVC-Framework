@@ -9,6 +9,7 @@ use Pimple\Container;
  */
 class DIC {
 	const SITE_MANAGER = 'site_manager';
+	const THEME = 'theme';
 
 	/** @var DIC */
 	private static $_instance;
@@ -16,9 +17,12 @@ class DIC {
 	private $_container;
 
 	private function __construct() {
-		$this->_container = new Container();
-		$this->_container[ '' . self::SITE_MANAGER . '' ] = function ( $c ) {
+		$this->_container                       = new Container();
+		$this->_container[ self::SITE_MANAGER ] = function ( $c ) {
 			return new SiteManager();
+		};
+		$this->_container[ self::THEME ]        = function ( $c ) {
+			return new Theme();
 		};
 	}
 
@@ -35,5 +39,9 @@ class DIC {
 
 	public function getSiteManager() {
 		return $this->_container[ self::SITE_MANAGER ];
+	}
+
+	public function getTheme() {
+		return $this->_container[ self::THEME ];
 	}
 } 
