@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Post;
+namespace WordPressHMVC\Post\Model;
 
 class Format {
 	const ASIDE = 'aside';

@@ -2,6 +2,9 @@
 
 namespace WordPressHMVC\Post\Model;
 
+use WordPressHMVC\Post\Exception\FormatNotSet;
+use WordPressHMVC\Post\Exception\PostNotExist;
+
 /**
  * Class Post
  * @package WordPressHMVC\Post\Model
@@ -132,5 +135,92 @@ class Post {
 	 */
 	public function setPassword( $password ) {
 		$this->_password = $password;
+	}
+
+	/**
+	 * Retrieve full permalink for this post.
+	 *
+	 * @param bool $leaveName Optional. Whether to keep post name or page name. Default false.
+	 *
+	 * @return string
+	 */
+	public function getPermalink( $leaveName = false ) {
+		$result = get_permalink( $this->_id, $leaveName );
+		if ( $result === false ) {
+			throw new PostNotExist();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Retrieve the format slug
+	 *
+	 * @return string
+	 */
+	public function getFormat() {
+		$result = get_post_format( $this->_id );
+		if ( $result == false ) {
+			throw new FormatNotSet();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Check if a post has any of the given formats, or any format.
+	 *
+	 * @param array $format Optional. The format or formats to check.
+	 *
+	 * @return bool
+	 */
+	public function hasFormat( $format = array() ) {
+		return has_post_format( $format, $this->_id );
+	}
+
+	/**
+	 * Assign a format.
+	 *
+	 * @param array $format A format to assign. Use an empty string or array to remove all formats from the post.
+	 */
+	public function setFormat( array $format ) {
+		$result = set_post_format( $this->_id, $format );
+		if ( is_wp_error( $result ) ) {
+			throw new PostNotExist();
+		}
+	}
+
+	/**
+	 * Retrieve edit posts link for post.
+	 *
+	 * @param string $context Optional, defaults to display. How to write the '&', defaults to '&amp;'.
+	 *
+	 * @return string
+	 */
+	public function getEditLink( $context = 'display' ) {
+		$result = get_edit_post_link( $this->_id, $context );
+		if ( empty( $result ) ) {
+			throw new PostNotExist();
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Retrieve delete posts link for post.
+	 *
+	 * @return string
+	 */
+	public function getDeleteLink() {
+		$result = get_delete_post_link( $this->_id );
+		if ( empty( $result ) ) {
+			throw new PostNotExist();
+		}
+
+		return $result;
+	}
+
+	public function isSticky() {
+		return is_sticky( $this->_id );
 	}
 }
