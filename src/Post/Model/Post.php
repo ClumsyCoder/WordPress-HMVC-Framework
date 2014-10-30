@@ -68,10 +68,17 @@ class Post {
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getId() {
+		return $this->_id;
+	}
+
+	/**
 	 * @param mixed $id
 	 */
 	public function setId( $id ) {
-		$this->_id = $id;
+		$this->_id = absint( $id );
 	}
 
 	/**
@@ -220,7 +227,30 @@ class Post {
 		return $result;
 	}
 
+	/**
+	 * Check if post is sticky.
+	 *
+	 * @return bool
+	 */
 	public function isSticky() {
 		return is_sticky( $this->_id );
+	}
+
+	/**
+	 * Check if post has an image attached.
+	 *
+	 * @return bool
+	 */
+	public function hasThumbnail() {
+		return has_post_thumbnail( $this->_id );
+	}
+
+	/**
+	 * Check if post has an excerpt.
+	 *
+	 * @return bool
+	 */
+	public function hasExcerpt() {
+		return has_excerpt( $this->_id );
 	}
 }

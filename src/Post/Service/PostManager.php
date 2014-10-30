@@ -6,11 +6,19 @@ use WordPressHMVC\Post\Exception\GlobalPostNotSet;
 use WordPressHMVC\Post\Exception\PostNotExist;
 use WordPressHMVC\Post\Factory\PostFactory;
 use WordPressHMVC\Post\Model\Post;
+use WordPressHMVC\Post\Collection\PostList;
 
+/**
+ * Class PostManager
+ * @package WordPressHMVC\Post\Service
+ */
 class PostManager {
 	/** @var PostFactory */
 	private $_postFactory;
 
+	/**
+	 * @param PostFactory $postFactory
+	 */
 	public function __construct( PostFactory $postFactory ) {
 		$this->_postFactory = $postFactory;
 	}
@@ -34,9 +42,8 @@ class PostManager {
 		} elseif ( empty( $result ) ) {
 			throw new PostNotExist();
 		}
-		$post = $this->_postFactory->create( $result );
 
-		return $post;
+		return $this->_postFactory->create( $result );
 	}
 
 	/**
@@ -59,9 +66,8 @@ class PostManager {
 		} elseif ( empty( $result ) ) {
 			throw new PostNotExist();
 		}
-		$post = $this->_postFactory->create( $result );
 
-		return $post;
+		return $this->_postFactory->create( $result );
 	}
 
 	/**
@@ -90,18 +96,32 @@ class PostManager {
 	 * @param array $queryArgs Optional. Arguments to retrieve posts. {@see WP_Query::parse_query()} for more available
 	 *                         arguments.
 	 *
-	 * @return array
+	 * @return PostList
 	 */
 	public function getPosts( array $queryArgs = array() ) {
-		$results = get_posts( $queryArgs );
-		$posts   = array();
-		if ( is_array( $results ) ) {
-			foreach ( $results as $post ) {
-				$posts[] = $this->_postFactory->create( $post );
-			}
-		}
+		return $this->_postFactory->createList( get_posts( $queryArgs ) );
+	}
 
-		return $posts;
+	/**
+	 * Retrieve a number of recent posts.
+	 *
+	 * @param array $queryArgs
+	 *
+	 * @return PostList
+	 */
+	public function getRecentPosts( array $queryArgs = array() ) {
+		return $this->_postFactory->createList( wp_get_recent_posts( $queryArgs ) );
+	}
+
+	/**
+	 * Retrieve ancestors of a post.
+	 *
+	 * @param Post $post
+	 *
+	 * @return PostList
+	 */
+	public function getPostAncestors( Post $post ) {
+		return $this->_postFactory->createList( get_post_ancestors( $post->getId() ) );
 	}
 
 	/**
@@ -116,8 +136,7 @@ class PostManager {
 		if ( is_null( $result ) ) {
 			throw new PostNotExist();
 		}
-		$post = $this->_postFactory->create( $result );
 
-		return $post;
+		return $this->_postFactory->create( $result );
 	}
 } 

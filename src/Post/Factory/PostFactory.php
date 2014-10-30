@@ -2,6 +2,7 @@
 
 namespace WordPressHMVC\Post\Factory;
 
+use WordPressHMVC\Post\Collection\PostList;
 use WordPressHMVC\Post\Model\Post;
 use WordPressHMVC\SiteManager;
 
@@ -21,6 +22,24 @@ class PostFactory {
 		}
 
 		return $post;
+	}
+
+	/**
+	 * Create a post list from an array of post data
+	 *
+	 * @param array $postsData
+	 *
+	 * @return PostList
+	 */
+	public function createList( $postsData ) {
+		$posts = array();
+		if ( ! empty( $postsData ) ) {
+			foreach ( $postsData as $postData ) {
+				$posts[] = $this->create( $postData );
+			}
+		}
+
+		return new PostList( new \ArrayObject( $posts ) );
 	}
 
 	private function _createPostFromWpPost( \WP_Post $wpPost ) {
@@ -46,4 +65,4 @@ class PostFactory {
 
 		return $post;
 	}
-} 
+}

@@ -2,6 +2,10 @@
 
 namespace WordPressHMVC\Post\Model;
 
+/**
+ * Class Format
+ * @package WordPressHMVC\Post\Model
+ */
 class Format {
 	const ASIDE = 'aside';
 	const GALLERY = 'gallery';
