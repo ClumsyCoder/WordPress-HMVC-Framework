@@ -9,6 +9,7 @@ class PostManagerTest extends \WP_UnitTestCase {
 	private $_postManager;
 	/** @var \WordPressHMVC\Post\Factory\PostFactory */
 	private $_postMockFactory;
+	/** @var null|\WP_Post */
 	private $_originalGlobalPost;
 
 	public function setUp() {
@@ -32,11 +33,10 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 */
 	public function testGetCurrentPost_When_Post_Exists() {
 		global $post;
-		$postId = $this->factory->post->create();
-		$post   = get_post( $postId );
-		$this->_mockCreatePost( array( 'id' => $postId ) );
+		$post = $this->factory->post->create_and_get();
+		$this->_mockCreatePost( array( 'id' => $post->ID ) );
 		$currentPost = $this->_postManager->getCurrentPost();
-		$this->assertEquals( $currentPost->getId(), $postId );
+		$this->assertEquals( $post->ID, $currentPost->getId() );
 	}
 
 	/**
@@ -54,7 +54,7 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$postId = $this->factory->post->create();
 		$this->_mockCreatePost( array( 'id' => $postId ) );
 		$currentPost = $this->_postManager->getPost( $postId );
-		$this->assertEquals( $currentPost->getId(), $postId );
+		$this->assertEquals( $postId, $currentPost->getId() );
 	}
 
 	/**
