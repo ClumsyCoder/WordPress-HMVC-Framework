@@ -188,6 +188,23 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertNotEmpty( $posts );
 	}
 
+	public function testGetRecentPosts_When_No_Recent_Posts() {
+		$posts = $this->_postManager->getRecentPosts();
+		$this->assertEmpty( $posts );
+	}
+
+	public function testGetRecentPosts_When_Few_Recent_Posts() {
+		$posts            = array(
+			$this->factory->post->create_and_get(),
+			$this->factory->post->create_and_get(),
+			$this->factory->post->create_and_get(),
+		);
+		$expectedPostList = new PostList( new \ArrayObject( $posts ) );
+		$this->_postMockFactory->method( 'createList' )
+		                       ->willReturn( $expectedPostList );
+		$this->assertNotEmpty( $posts );
+	}
+
 	/**
 	 * Mock the create method of the post factory with post data
 	 *

@@ -115,7 +115,12 @@ class PostManager {
 	 * @return PostList
 	 */
 	public function getRecentPosts( array $queryArgs = array() ) {
-		return $this->_postFactory->createList( wp_get_recent_posts( $queryArgs ) );
+		$result = wp_get_recent_posts( $queryArgs );
+		if ( $result == false ) {
+			$result = array();
+		}
+
+		return $this->_postFactory->createList( $result );
 	}
 
 	/**
