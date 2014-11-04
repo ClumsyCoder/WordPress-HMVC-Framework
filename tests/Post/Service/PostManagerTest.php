@@ -93,12 +93,11 @@ class PostManagerTest extends \WP_UnitTestCase {
 			'post_status' => 'publish',
 			'post_type'   => 'post'
 		) );
-		$nextPostId = $this->factory->post->create(
-			array(
-				'post_date'   => '2010-01-02 00:00',
-				'post_status' => 'publish',
-				'post_type'   => 'post'
-			) );
+		$nextPostId = $this->factory->post->create( array(
+			'post_date'   => '2010-01-02 00:00',
+			'post_status' => 'publish',
+			'post_type'   => 'post'
+		) );
 
 		$this->_mockCreatePost( array( 'id' => $nextPostId ) );
 
@@ -120,7 +119,7 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * Test retrieving the current post when none exists
 	 */
 	public function  testGetCurrentPost_When_Post_Not_Exists() {
-		$this->setExpectedException( 'WordPressHMVC\Post\Exception\PostNotExist' );
+		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getCurrentPost();
 	}
 
@@ -138,7 +137,7 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * Test retrieving a post for an id that does not exist
 	 */
 	public function testGetPost_When_Post_Not_Exists() {
-		$this->setExpectedException( 'WordPressHMVC\Post\Exception\PostNotExist' );
+		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getPost( 99 );
 	}
 
@@ -157,6 +156,11 @@ class PostManagerTest extends \WP_UnitTestCase {
 		                       ->willReturn( $post );
 	}
 
+	/**
+	 * @param array $arguments
+	 *
+	 * @return null|\WP_Post
+	 */
 	private function _createAndGetGlobalPost( $arguments = array() ) {
 		global $post;
 		$post = $this->factory->post->create_and_get( $arguments );
@@ -164,6 +168,11 @@ class PostManagerTest extends \WP_UnitTestCase {
 		return $post;
 	}
 
+	/**
+	 * @param array $arguments
+	 *
+	 * @return int
+	 */
 	private function _createGlobalPost( $arguments = array() ) {
 		$post = $this->_createAndGetGlobalPost( $arguments );
 

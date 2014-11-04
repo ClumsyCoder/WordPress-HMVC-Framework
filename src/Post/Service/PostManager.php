@@ -31,14 +31,7 @@ class PostManager {
 	 * @return \WordPressHMVC\Post\Model\Post
 	 */
 	public function getPreviousPost( $inSameTerm = false, $excludedTerms = '', $taxonomyName = 'category' ) {
-		$result = get_previous_post( $inSameTerm, $excludedTerms, $taxonomyName );
-		if ( is_null( $result ) ) {
-			throw new GlobalPostNotSet();
-		} elseif ( empty( $result ) ) {
-			throw new PostNotExist();
-		}
-
-		return $this->_postFactory->create( $result );
+		return $this->_getAdjacentPost( $inSameTerm, $excludedTerms, true, $taxonomyName );
 	}
 
 	/**
@@ -49,38 +42,29 @@ class PostManager {
 	 * @return Post
 	 */
 	public function getNextPost( $inSameTerm = false, $excludedTerms = '', $taxonomyName = 'category' ) {
-		$result = get_next_post( $inSameTerm, $excludedTerms, $taxonomyName );
-		if ( is_null( $result ) ) {
-			throw new GlobalPostNotSet();
-		} elseif ( empty( $result ) ) {
-			throw new PostNotExist();
-		}
-
-		return $this->_postFactory->create( $result );
+		return $this->_getAdjacentPost( $inSameTerm, $excludedTerms, false, $taxonomyName );
 	}
 
 	/**
-	 * Retrieve boundary post.
-	 *
-	 * Boundary being either the first or last post by publish date within the constraints specified
-	 * by $inSameTerm or $excludedTerms.
-	 *
 	 * @param bool   $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
 	 * @param array  $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
-	 * @param bool   $start         Optional. Whether to retrieve first or last post.
-	 * @param string $taxonomy      Optional. Taxonomy, if $in_same_term is true. Default 'category'.
+	 * @param string $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
 	 *
-	 * @return \WordPressHMVC\Post\Model\Post
+	 * @return Post
 	 */
-	public function getBoundaryPost( $inSameTerm = false, $excludedTerms = array(), $start = true, $taxonomy = 'category' ) {
-		$result = get_boundary_post( $inSameTerm, $excludedTerms, $start, $taxonomy );
-		if ( is_null( $result ) ) {
-			throw new GlobalPostNotSet();
-		} elseif ( empty( $result ) ) {
-			throw new PostNotExist();
-		}
+	public function getFirstPost( $inSameTerm = false, $excludedTerms = array(), $taxonomyName = 'category' ) {
+		return $this->_getBoundaryPost( $inSameTerm, $excludedTerms, true, $taxonomyName );
+	}
 
-		return $this->_postFactory->create( $result );
+	/**
+	 * @param bool   $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
+	 * @param array  $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param string $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
+	 *
+	 * @return Post
+	 */
+	public function getLastPost( $inSameTerm = false, $excludedTerms = array(), $taxonomyName = 'category' ) {
+		return $this->_getBoundaryPost( $inSameTerm, $excludedTerms, false, $taxonomyName );
 	}
 
 	/**
@@ -152,4 +136,47 @@ class PostManager {
 
 		return $this->_postFactory->create( $result );
 	}
-} 
+
+	/**
+	 * Retrieve boundary post.
+	 *
+	 * Boundary being either the first or last post by publish date within the constraints specified
+	 * by $inSameTerm or $excludedTerms.
+	 *
+	 * @param bool   $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
+	 * @param array  $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param bool   $start         Optional. Whether to retrieve first or last post.
+	 * @param string $taxonomy      Optional. Taxonomy, if $in_same_term is true. Default 'category'.
+	 *
+	 * @return \WordPressHMVC\Post\Model\Post
+	 */
+	private function _getBoundaryPost( $inSameTerm = false, $excludedTerms = array(), $start = true, $taxonomy = 'category' ) {
+		$result = get_boundary_post( $inSameTerm, $excludedTerms, $start, $taxonomy );
+		if ( is_null( $result ) ) {
+			throw new GlobalPostNotSet();
+		} elseif ( empty( $result ) ) {
+			throw new PostNotExist();
+		}
+
+		return $this->_postFactory->create( $result );
+	}
+
+	/**
+	 * @param bool         $inSameTerm    Optional. Whether post should be in a same taxonomy term.
+	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param bool         $previous      Optional. Whether to retrieve previous post.
+	 * @param string       $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
+	 *
+	 * @return Post
+	 */
+	private function _getAdjacentPost( $inSameTerm = false, $excludedTerms = array(), $previous = true, $taxonomyName = 'category' ) {
+		$result = get_adjacent_post( $inSameTerm, $excludedTerms, $previous, $taxonomyName );
+		if ( is_null( $result ) ) {
+			throw new GlobalPostNotSet();
+		} elseif ( empty( $result ) ) {
+			throw new PostNotExist();
+		}
+
+		return $this->_postFactory->create( $result );
+	}
+}
