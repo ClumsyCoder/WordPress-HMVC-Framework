@@ -40,8 +40,7 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * Test retrieving previous post will throw exception when there is only one post
 	 */
 	public function testGetPreviousPost_When_No_Previous_Post() {
-		global $post;
-		$post = $this->factory->post->create_and_get();
+		$this->_createGlobalPost();
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getPreviousPost();
 	}
@@ -50,14 +49,13 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * Test retrieving previous post when no previous post exists
 	 */
 	public function testGetPreviousPost_When_Previous_Post_Exists() {
-		global $post;
 		$prevWpPostId = $this->factory->post->create(
 			array(
 				'post_date'   => '2010-01-01 00:00',
 				'post_status' => 'publish',
 				'post_type'   => 'post'
 			) );
-		$post         = $this->factory->post->create_and_get( array(
+		$this->_createGlobalPost( array(
 			'post_date'   => '2010-01-02 00:00',
 			'post_status' => 'publish',
 			'post_type'   => 'post'
@@ -81,15 +79,16 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * Test retrieving previous post will throw exception when there is only one post
 	 */
 	public function testGetNextPost_When_No_Previous_Post() {
-		global $post;
-		$post = $this->factory->post->create_and_get();
+		$this->_createGlobalPost();
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getNextPost();
 	}
 
+	/**
+	 * Test retrieving next post when one exists
+	 */
 	public function testGetNextPost_When_Next_Post_Exists() {
-		global $post;
-		$post       = $this->factory->post->create_and_get( array(
+		$this->_createGlobalPost( array(
 			'post_date'   => '2010-01-01 00:00',
 			'post_status' => 'publish',
 			'post_type'   => 'post'
@@ -111,11 +110,10 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * Test retrieving the current post when one exists
 	 */
 	public function testGetCurrentPost_When_Post_Exists() {
-		global $post;
-		$post = $this->factory->post->create_and_get();
-		$this->_mockCreatePost( array( 'id' => $post->ID ) );
+		$postId = $this->_createGlobalPost();
+		$this->_mockCreatePost( array( 'id' => $postId ) );
 		$currentPost = $this->_postManager->getCurrentPost();
-		$this->assertEquals( $post->ID, $currentPost->getId() );
+		$this->assertEquals( $postId, $currentPost->getId() );
 	}
 
 	/**
@@ -157,5 +155,18 @@ class PostManagerTest extends \WP_UnitTestCase {
 		}
 		$this->_postMockFactory->method( 'create' )
 		                       ->willReturn( $post );
+	}
+
+	private function _createAndGetGlobalPost( $arguments = array() ) {
+		global $post;
+		$post = $this->factory->post->create_and_get( $arguments );
+
+		return $post;
+	}
+
+	private function _createGlobalPost( $arguments = array() ) {
+		$post = $this->_createAndGetGlobalPost( $arguments );
+
+		return $post->ID;
 	}
 }
