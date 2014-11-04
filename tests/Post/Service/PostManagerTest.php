@@ -2,6 +2,7 @@
 
 namespace WordPressHMVC\Post\Service;
 
+use WordPressHMVC\Post\Collection\PostList;
 use WordPressHMVC\Post\Model\Post;
 
 class PostManagerTest extends \WP_UnitTestCase {
@@ -9,8 +10,6 @@ class PostManagerTest extends \WP_UnitTestCase {
 	private $_postManager;
 	/** @var \WordPressHMVC\Post\Factory\PostFactory */
 	private $_postMockFactory;
-	/** @var null|\WP_Post */
-	private $_originalGlobalPost;
 
 	public function setUp() {
 		parent::setUp();
@@ -171,6 +170,22 @@ class PostManagerTest extends \WP_UnitTestCase {
 	public function testGetPost_When_Post_Not_Exists() {
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getPost( 99 );
+	}
+
+	public function testGetPosts_When_No_Post_Exists() {
+		$posts = $this->_postManager->getPosts();
+		$this->assertEmpty( $posts );
+	}
+
+	public function testGetPosts_When_Posts_Set() {
+		$posts            = array(
+			$this->_createAndGetGlobalPost(),
+		);
+		$expectedPostList = new PostList( new \ArrayObject( $posts ) );
+		$this->_postMockFactory->method( 'createList' )
+		                       ->willReturn( $expectedPostList );
+		$posts = $this->_postManager->getPosts();
+		$this->assertNotEmpty( $posts );
 	}
 
 	/**
