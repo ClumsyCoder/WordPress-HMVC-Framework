@@ -205,6 +205,31 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertNotEmpty( $posts );
 	}
 
+	public function testGetPostAncestors_When_No_Ancestors() {
+		$post   = $this->factory->post->create_and_get();
+		$myPost = new Post();
+		$myPost->setId( $post->ID );
+
+		$posts = $this->_postManager->getPostAncestors( $myPost );
+		$this->assertEmpty( $posts );
+	}
+
+	public function testGetPostAncestors_When_Ancestors_Exist() {
+		$parentPost = $this->factory->post->create_and_get();
+		$childPost  = $this->factory->post->create_and_get( array( 'post_parent' => $parentPost->ID ) );
+
+		$myPost = new Post();
+		$myPost->setId( $childPost->ID );
+
+		$expectedPostList = new PostList( new \ArrayObject( array( $parentPost ) ) );
+		$this->_postMockFactory->method( 'createList' )
+		                       ->with( array( $parentPost->ID ) )
+		                       ->willReturn( $expectedPostList );
+
+		$posts = $this->_postManager->getPostAncestors( $myPost );
+		$this->assertNotEmpty( $posts );
+	}
+
 	/**
 	 * Mock the create method of the post factory with post data
 	 *
