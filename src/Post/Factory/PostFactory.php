@@ -2,6 +2,7 @@
 
 namespace WordPressHMVC\Post\Factory;
 
+use WordPressHMVC\FactoryInterface;
 use WordPressHMVC\Post\Collection\PostList;
 use WordPressHMVC\Post\Model\Post;
 use WordPressHMVC\SiteManager;
@@ -10,7 +11,7 @@ use WordPressHMVC\SiteManager;
  * Class PostFactory
  * @package WordPressHMVC\Post\Factory
  */
-class PostFactory {
+class PostFactory implements FactoryInterface {
 	/** @var SiteManager */
 	private $_siteManager;
 
@@ -45,7 +46,7 @@ class PostFactory {
 	 *
 	 * @return PostList
 	 */
-	public function createList( $postsData ) {
+	public function createList( array $postsData ) {
 		$posts = array();
 		if ( ! empty( $postsData ) ) {
 			foreach ( $postsData as $postData ) {
