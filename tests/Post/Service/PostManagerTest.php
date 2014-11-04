@@ -55,6 +55,41 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertEquals( $firstPostId, $firstPost->getId() );
 	}
 
+	public function getLastPost_When_Global_Post_Not_Set() {
+		$this->setExpectedException( '\WordPressHMVC\Post\Exception\GlobalPostNotSet' );
+		$this->_postManager->getLastPost();
+	}
+
+	public function testGetLastPost_When_First_Post_Not_Exist() {
+		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
+		$this->_createGlobalPost( array( 'post_type' => 'page' ) );
+		$this->_postManager->getLastPost();
+	}
+
+	public function testGetLastPost_When_First_Post_Exists() {
+		$this->factory->post->create(
+			array(
+				'post_date'   => '2010-01-02 00:00:00',
+				'post_status' => 'publish',
+				'post_type'   => 'post'
+			) );
+		$this->_createGlobalPost( array(
+			'post_date'   => '2010-01-03 00:00:00',
+			'post_status' => 'publish',
+			'post_type'   => 'post'
+		) );
+		$lastPostId = $this->factory->post->create(
+			array(
+				'post_date'   => '2010-01-01 00:00:00',
+				'post_status' => 'publish',
+				'post_type'   => 'post'
+			) );
+
+		$this->_mockCreatePost( array( 'id' => $lastPostId ) );
+		$firstPost = $this->_postManager->getLastPost();
+		$this->assertEquals( $lastPostId, $firstPost->getId() );
+	}
+
 	public function testGetPreviousPost_When_Global_Post_Not_Set() {
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\GlobalPostNotSet' );
 		$this->_postManager->getPreviousPost();
