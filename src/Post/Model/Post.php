@@ -3,6 +3,7 @@
 namespace WordPressHMVC\Post\Model;
 
 use WordPressHMVC\Post\Exception\FormatNotSet;
+use WordPressHMVC\Post\Exception\NotAllowedToEdit;
 use WordPressHMVC\Post\Exception\PostNotExist;
 
 /**
@@ -40,17 +41,17 @@ class Post {
 	private $_password;
 
 	/**
-	 * @param mixed $authorId
+	 * @param int $authorId
 	 */
 	public function setAuthorId( $authorId ) {
-		$this->_authorId = $authorId;
+		$this->_authorId = absint( $authorId );
 	}
 
 	/**
-	 * @param mixed $commentStatus
+	 * @param bool $commentStatus
 	 */
 	public function setCommentStatus( $commentStatus ) {
-		$this->_commentStatus = $commentStatus;
+		$this->_commentStatus = ( $commentStatus == true );
 	}
 
 	/**
@@ -82,49 +83,49 @@ class Post {
 	}
 
 	/**
-	 * @param mixed $modifiedDate
+	 * @param \DateTime $modifiedDate
 	 */
-	public function setModifiedDate( $modifiedDate ) {
+	public function setModifiedDate( \DateTime $modifiedDate ) {
 		$this->_modifiedDate = $modifiedDate;
 	}
 
 	/**
-	 * @param mixed $modifiedGmtDate
+	 * @param \DateTime $modifiedGmtDate
 	 */
-	public function setModifiedGmtDate( $modifiedGmtDate ) {
+	public function setModifiedGmtDate( \DateTime $modifiedGmtDate ) {
 		$this->_modifiedGmtDate = $modifiedGmtDate;
 	}
 
 	/**
-	 * @param mixed $name
+	 * @param string $name
 	 */
 	public function setName( $name ) {
 		$this->_name = $name;
 	}
 
 	/**
-	 * @param mixed $publicationDate
+	 * @param \DateTime $publicationDate
 	 */
-	public function setPublicationDate( $publicationDate ) {
+	public function setPublicationDate( \DateTime $publicationDate ) {
 		$this->_publicationDate = $publicationDate;
 	}
 
 	/**
-	 * @param mixed $publicationGmtDate
+	 * @param \DateTime $publicationGmtDate
 	 */
-	public function setPublicationGmtDate( $publicationGmtDate ) {
+	public function setPublicationGmtDate( \DateTime $publicationGmtDate ) {
 		$this->_publicationGmtDate = $publicationGmtDate;
 	}
 
 	/**
-	 * @param mixed $status
+	 * @param string $status
 	 */
 	public function setStatus( $status ) {
 		$this->_status = $status;
 	}
 
 	/**
-	 * @param mixed $title
+	 * @param string $title
 	 */
 	public function setTitle( $title ) {
 		$this->_title = $title;
@@ -134,7 +135,7 @@ class Post {
 	 * @param int $commentCount
 	 */
 	public function setCommentCount( $commentCount ) {
-		$this->_commentCount = $commentCount;
+		$this->_commentCount = absint( $commentCount );
 	}
 
 	/**
@@ -188,9 +189,9 @@ class Post {
 	/**
 	 * Assign a format.
 	 *
-	 * @param array $format A format to assign. Use an empty string or array to remove all formats from the post.
+	 * @param string $format A format to assign. Use an empty string or array to remove all formats from the post.
 	 */
-	public function setFormat( array $format ) {
+	public function setFormat( $format ) {
 		$result = set_post_format( $this->_id, $format );
 		if ( is_wp_error( $result ) ) {
 			throw new PostNotExist();
@@ -206,6 +207,9 @@ class Post {
 	 */
 	public function getEditLink( $context = 'display' ) {
 		$result = get_edit_post_link( $this->_id, $context );
+		if ( ! current_user_can( 'edit_post', $this->_id ) ) {
+			throw new NotAllowedToEdit();
+		}
 		if ( empty( $result ) ) {
 			throw new PostNotExist();
 		}
