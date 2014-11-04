@@ -24,31 +24,37 @@ class PostManager {
 	}
 
 	/**
-	 * @param bool   $inSameTerm    Optional. Whether post should be in a same taxonomy term.
-	 * @param string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
-	 * @param string $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
+	 * Get previous post in context by publish date
+	 *
+	 * @param bool         $inSameTerm    Optional. Whether post should be in a same taxonomy term.
+	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param string       $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
 	 *
 	 * @return \WordPressHMVC\Post\Model\Post
 	 */
-	public function getPreviousPost( $inSameTerm = false, $excludedTerms = '', $taxonomyName = 'category' ) {
+	public function getPreviousPost( $inSameTerm = false, $excludedTerms = array(), $taxonomyName = 'category' ) {
 		return $this->_getAdjacentPost( $inSameTerm, $excludedTerms, true, $taxonomyName );
 	}
 
 	/**
-	 * @param bool   $inSameTerm    Optional. Whether post should be in a same taxonomy term.
-	 * @param string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
-	 * @param string $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
+	 * Get next post in context by publish date
+	 *
+	 * @param bool         $inSameTerm    Optional. Whether post should be in a same taxonomy term.
+	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param string       $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
 	 *
 	 * @return Post
 	 */
-	public function getNextPost( $inSameTerm = false, $excludedTerms = '', $taxonomyName = 'category' ) {
+	public function getNextPost( $inSameTerm = false, $excludedTerms = array(), $taxonomyName = 'category' ) {
 		return $this->_getAdjacentPost( $inSameTerm, $excludedTerms, false, $taxonomyName );
 	}
 
 	/**
-	 * @param bool   $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
-	 * @param array  $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
-	 * @param string $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
+	 * Get first post in context
+	 *
+	 * @param bool         $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
+	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param string       $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
 	 *
 	 * @return Post
 	 */
@@ -57,9 +63,11 @@ class PostManager {
 	}
 
 	/**
-	 * @param bool   $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
-	 * @param array  $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
-	 * @param string $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
+	 * Get last post in context
+	 *
+	 * @param bool         $inSameTerm    Optional. Whether returned post should be in a same taxonomy term.
+	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param string       $taxonomyName  Optional. Taxonomy, if $in_same_term is true. Default 'category'.
 	 *
 	 * @return Post
 	 */
@@ -151,10 +159,12 @@ class PostManager {
 	 * @return \WordPressHMVC\Post\Model\Post
 	 */
 	private function _getBoundaryPost( $inSameTerm = false, $excludedTerms = array(), $start = true, $taxonomy = 'category' ) {
-		$result = get_boundary_post( $inSameTerm, $excludedTerms, $start, $taxonomy );
-		if ( is_null( $result ) ) {
+		global $post;
+		if ( empty( $post ) ) {
 			throw new GlobalPostNotSet();
-		} elseif ( empty( $result ) ) {
+		}
+		$result = get_boundary_post( $inSameTerm, $excludedTerms, $start, $taxonomy );
+		if ( empty( $result ) ) {
 			throw new PostNotExist();
 		}
 
@@ -162,6 +172,8 @@ class PostManager {
 	}
 
 	/**
+	 * Get an adjacent post for the current context
+	 *
 	 * @param bool         $inSameTerm    Optional. Whether post should be in a same taxonomy term.
 	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
 	 * @param bool         $previous      Optional. Whether to retrieve previous post.

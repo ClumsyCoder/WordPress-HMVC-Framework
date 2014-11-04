@@ -13,41 +13,59 @@ class PostManagerTest extends \WP_UnitTestCase {
 	private $_originalGlobalPost;
 
 	public function setUp() {
-		global $post;
 		parent::setUp();
-
-		$this->_originalGlobalPost = $post;
-		$this->_postMockFactory    = $this->getMockBuilder( 'WordPressHMVC\Post\Factory\PostFactory' )
-		                                  ->disableOriginalConstructor()
-		                                  ->getMock();
-		$this->_postManager        = new PostManager( $this->_postMockFactory );
+		$this->_postMockFactory = $this->getMockBuilder( 'WordPressHMVC\Post\Factory\PostFactory' )
+		                               ->disableOriginalConstructor()
+		                               ->getMock();
+		$this->_postManager     = new PostManager( $this->_postMockFactory );
 	}
 
-	public function tearDown() {
-		global $post;
-		$post = $this->_originalGlobalPost;
+	public function testGetFirstPost_When_Global_Post_Not_Set() {
+		$this->setExpectedException( '\WordPressHMVC\Post\Exception\GlobalPostNotSet' );
+		$this->_postManager->getFirstPost();
 	}
 
-	/**
-	 * Test retrieving an previous post will throw exception when global post not set
-	 */
+	public function testGetFirstPost_When_First_Post_Not_Exist() {
+		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
+		$this->_createGlobalPost( array( 'post_type' => 'page' ) );
+		$this->_postManager->getFirstPost();
+	}
+
+	public function testGetFirstPost_When_First_Post_Exists() {
+		$firstPostId = $this->factory->post->create(
+			array(
+				'post_date'   => '2010-01-01 00:00:00',
+				'post_status' => 'publish',
+				'post_type'   => 'post'
+			) );
+		$this->factory->post->create(
+			array(
+				'post_date'   => '2010-01-02 00:00:00',
+				'post_status' => 'publish',
+				'post_type'   => 'post'
+			) );
+		$this->_createGlobalPost( array(
+			'post_date'   => '2010-01-03 00:00:00',
+			'post_status' => 'publish',
+			'post_type'   => 'post'
+		) );
+
+		$this->_mockCreatePost( array( 'id' => $firstPostId ) );
+		$firstPost = $this->_postManager->getFirstPost();
+		$this->assertEquals( $firstPostId, $firstPost->getId() );
+	}
+
 	public function testGetPreviousPost_When_Global_Post_Not_Set() {
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\GlobalPostNotSet' );
 		$this->_postManager->getPreviousPost();
 	}
 
-	/**
-	 * Test retrieving previous post will throw exception when there is only one post
-	 */
 	public function testGetPreviousPost_When_No_Previous_Post() {
 		$this->_createGlobalPost();
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getPreviousPost();
 	}
 
-	/**
-	 * Test retrieving previous post when no previous post exists
-	 */
 	public function testGetPreviousPost_When_Previous_Post_Exists() {
 		$prevWpPostId = $this->factory->post->create(
 			array(
@@ -67,26 +85,17 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertEquals( $prevWpPostId, $adjacentPost->getId() );
 	}
 
-	/**
-	 * Test retrieving an previous post will throw exception when global post not set
-	 */
 	public function testGetNextPost_When_Global_Post_Not_Set() {
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\GlobalPostNotSet' );
 		$this->_postManager->getNextPost();
 	}
 
-	/**
-	 * Test retrieving previous post will throw exception when there is only one post
-	 */
 	public function testGetNextPost_When_No_Previous_Post() {
 		$this->_createGlobalPost();
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getNextPost();
 	}
 
-	/**
-	 * Test retrieving next post when one exists
-	 */
 	public function testGetNextPost_When_Next_Post_Exists() {
 		$this->_createGlobalPost( array(
 			'post_date'   => '2010-01-01 00:00',
@@ -105,9 +114,6 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertEquals( $nextPostId, $adjacentPost->getId() );
 	}
 
-	/**
-	 * Test retrieving the current post when one exists
-	 */
 	public function testGetCurrentPost_When_Post_Exists() {
 		$postId = $this->_createGlobalPost();
 		$this->_mockCreatePost( array( 'id' => $postId ) );
@@ -115,17 +121,11 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertEquals( $postId, $currentPost->getId() );
 	}
 
-	/**
-	 * Test retrieving the current post when none exists
-	 */
 	public function  testGetCurrentPost_When_Post_Not_Exists() {
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getCurrentPost();
 	}
 
-	/**
-	 * Test retrieving a post that does exist
-	 */
 	public function testGetPost_When_Post_Exists() {
 		$postId = $this->factory->post->create();
 		$this->_mockCreatePost( array( 'id' => $postId ) );
@@ -133,9 +133,6 @@ class PostManagerTest extends \WP_UnitTestCase {
 		$this->assertEquals( $postId, $currentPost->getId() );
 	}
 
-	/**
-	 * Test retrieving a post for an id that does not exist
-	 */
 	public function testGetPost_When_Post_Not_Exists() {
 		$this->setExpectedException( '\WordPressHMVC\Post\Exception\PostNotExist' );
 		$this->_postManager->getPost( 99 );
@@ -162,8 +159,8 @@ class PostManagerTest extends \WP_UnitTestCase {
 	 * @return null|\WP_Post
 	 */
 	private function _createAndGetGlobalPost( $arguments = array() ) {
-		global $post;
 		$post = $this->factory->post->create_and_get( $arguments );
+		$this->go_to( get_permalink( $post->ID ) );
 
 		return $post;
 	}
