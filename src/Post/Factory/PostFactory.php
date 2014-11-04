@@ -6,14 +6,28 @@ use WordPressHMVC\Post\Collection\PostList;
 use WordPressHMVC\Post\Model\Post;
 use WordPressHMVC\SiteManager;
 
+/**
+ * Class PostFactory
+ * @package WordPressHMVC\Post\Factory
+ */
 class PostFactory {
 	/** @var SiteManager */
 	private $_siteManager;
 
+	/**
+	 * @param SiteManager $siteManager
+	 */
 	public function __construct( SiteManager $siteManager ) {
 		$this->_siteManager = $siteManager;
 	}
 
+	/**
+	 * Create a post object from post data.  This post data can be a WP_Post object.
+	 *
+	 * @param mixed|\WP_Post $postData
+	 *
+	 * @return Post
+	 */
 	public function create( $postData ) {
 		if ( $postData instanceof \WP_Post ) {
 			$post = $this->_createPostFromWpPost( $postData );
@@ -42,6 +56,13 @@ class PostFactory {
 		return new PostList( new \ArrayObject( $posts ) );
 	}
 
+	/**
+	 * Create a post object from a WP_Post object
+	 *
+	 * @param \WP_Post $wpPost
+	 *
+	 * @return Post
+	 */
 	private function _createPostFromWpPost( \WP_Post $wpPost ) {
 		$post = new Post();
 

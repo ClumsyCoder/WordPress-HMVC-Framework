@@ -24,19 +24,32 @@ class PostManager {
 	}
 
 	/**
-	 * Retrieve adjacent post.
-	 *
-	 * Can either be next or previous post.
-	 *
 	 * @param bool   $inSameTerm    Optional. Whether post should be in a same taxonomy term.
-	 * @param array  $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
-	 * @param bool   $previous      Optional. Whether to retrieve previous post.
+	 * @param string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
 	 * @param string $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
 	 *
 	 * @return \WordPressHMVC\Post\Model\Post
 	 */
-	public function getAdjacentPost( $inSameTerm = false, $excludedTerms = array(), $previous = true, $taxonomyName = 'category' ) {
-		$result = get_adjacent_post( $inSameTerm, $excludedTerms, $previous, $taxonomyName );
+	public function getPreviousPost( $inSameTerm = false, $excludedTerms = '', $taxonomyName = 'category' ) {
+		$result = get_previous_post( $inSameTerm, $excludedTerms, $taxonomyName );
+		if ( is_null( $result ) ) {
+			throw new GlobalPostNotSet();
+		} elseif ( empty( $result ) ) {
+			throw new PostNotExist();
+		}
+
+		return $this->_postFactory->create( $result );
+	}
+
+	/**
+	 * @param bool   $inSameTerm    Optional. Whether post should be in a same taxonomy term.
+	 * @param string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
+	 * @param string $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
+	 *
+	 * @return Post
+	 */
+	public function getNextPost( $inSameTerm = false, $excludedTerms = '', $taxonomyName = 'category' ) {
+		$result = get_next_post( $inSameTerm, $excludedTerms, $taxonomyName );
 		if ( is_null( $result ) ) {
 			throw new GlobalPostNotSet();
 		} elseif ( empty( $result ) ) {
