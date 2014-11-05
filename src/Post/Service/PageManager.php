@@ -46,4 +46,17 @@ class PageManager {
 
 		return $this->_pageFactory->create( $page );
 	}
+
+	public function getPageByTitle( $title ) {
+		$page = get_page_by_title( $title );
+		if ( empty( $page ) ) {
+			throw new PageNotExist();
+		}
+
+		return $this->_pageFactory->create( $page );
+	}
+
+	public function getPages( array $queryArgs = array() ) {
+		return $this->_pageFactory->createList( get_pages( $queryArgs ) );
+	}
 }
