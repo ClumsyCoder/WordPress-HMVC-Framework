@@ -3,8 +3,6 @@
 namespace WordPressHMVC\Post\Model;
 
 use WordPressHMVC\Post\Exception\FormatNotSet;
-use WordPressHMVC\Post\Exception\NotAllowedToDelete;
-use WordPressHMVC\Post\Exception\NotAllowedToEdit;
 use WordPressHMVC\Post\Exception\PostNotExist;
 
 /**
@@ -235,6 +233,21 @@ class Post {
 		$this->_assertPostIdSet();
 
 		return has_excerpt( $this->_id );
+	}
+
+	/**
+	 * @param string       $size Image size. Defaults to 'post-thumbnail'.
+	 * @param string|array $attr Optional. Query string or array of attributes.
+	 *
+	 * @return mixed|void
+	 */
+	public function getThumbnail( $size = 'post-thumbnail', $attr = '' ) {
+		$this->_assertPostIdSet();
+
+		$thumbnailData = get_the_post_thumbnail( $this->_id, $size, 'attr' );
+
+		//todo: should return an attachment object instead
+		return $thumbnailData;
 	}
 
 	/**
