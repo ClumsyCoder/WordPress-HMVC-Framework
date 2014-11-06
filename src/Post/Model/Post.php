@@ -154,9 +154,7 @@ class Post {
 	 * @return string
 	 */
 	public function getPermalink( $leaveName = false ) {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
+		$this->_assertPostIdSet();
 		$result = get_permalink( $this->_id, $leaveName );
 		if ( $result === false ) {
 			throw new PostNotExist();
@@ -171,9 +169,7 @@ class Post {
 	 * @return string
 	 */
 	public function getFormat() {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
+		$this->_assertPostIdSet();
 		$result = get_post_format( $this->_id );
 		if ( $result == false ) {
 			throw new FormatNotSet();
@@ -190,9 +186,7 @@ class Post {
 	 * @return bool
 	 */
 	public function hasFormat( $format = array() ) {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
+		$this->_assertPostIdSet();
 
 		return has_post_format( $format, $this->_id );
 	}
@@ -203,53 +197,11 @@ class Post {
 	 * @param string $format A format to assign. Use an empty string or array to remove all formats from the post.
 	 */
 	public function setFormat( $format ) {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
+		$this->_assertPostIdSet();
 		$result = set_post_format( $this->_id, $format );
 		if ( is_wp_error( $result ) ) {
 			throw new PostNotExist();
 		}
-	}
-
-	/**
-	 * Retrieve edit posts link for post.
-	 *
-	 * @param string $context Optional, defaults to display. How to write the '&', defaults to '&amp;'.
-	 *
-	 * @return string
-	 */
-	public function getEditLink( $context = 'display' ) {
-		if ( ! current_user_can( 'edit_post', $this->_id ) ) {
-			throw new NotAllowedToEdit();
-		}
-		$result = get_edit_post_link( $this->_id, $context );
-		if ( empty( $result ) ) {
-			throw new PostNotExist();
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Retrieve delete posts link for post.
-	 *
-	 * @return string
-	 */
-	public function getDeleteLink() {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
-
-		if ( ! current_user_can( 'delete_post', $this->_id ) ) {
-			throw new NotAllowedToDelete();
-		}
-		$result = get_delete_post_link( $this->_id );
-		if ( empty( $result ) ) {
-			throw new PostNotExist();
-		}
-
-		return $result;
 	}
 
 	/**
@@ -258,9 +210,7 @@ class Post {
 	 * @return bool
 	 */
 	public function isSticky() {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
+		$this->_assertPostIdSet();
 
 		return is_sticky( $this->_id );
 	}
@@ -271,9 +221,7 @@ class Post {
 	 * @return bool
 	 */
 	public function hasThumbnail() {
-		if ( ! isset( $this->_id ) ) {
-			throw new PostNotExist();
-		}
+		$this->_assertPostIdSet();
 
 		return has_post_thumbnail( $this->_id );
 	}
@@ -284,10 +232,17 @@ class Post {
 	 * @return bool
 	 */
 	public function hasExcerpt() {
+		$this->_assertPostIdSet();
+
+		return has_excerpt( $this->_id );
+	}
+
+	/**
+	 * Asserts that the current post exists.  If not an exception PostNotExist is thrown.
+	 */
+	private function _assertPostIdSet() {
 		if ( ! isset( $this->_id ) ) {
 			throw new PostNotExist();
 		}
-
-		return has_excerpt( $this->_id );
 	}
 }
