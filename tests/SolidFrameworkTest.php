@@ -16,6 +16,52 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 		parent::tearDown();
 	}
 
+	public function testSetup_Without_Config_Should_Use_Default() {
+		$this->_setupTestNamespace();
+		$postManager = $this->_solidFramework->getService( 'postManager' );
+		$this->assertInstanceOf( '\WordPressSolid\Post\Service\PostManager', $postManager );
+	}
+
+	public function testSetup_With_Custom_Config_Should_Use_Custom() {
+		$mockClassName = 'myMockClass';
+		$this->getMockBuilder( 'nonexistant' )
+		     ->setMockClassName( $mockClassName )
+		     ->getMock();
+
+		$this->_solidFramework->setup( 'myNamespace', array(
+			'services' => array(
+				'postManager' => array(
+					'class'       => $mockClassName,
+					'constructor' => array(),
+				),
+			),
+		) );
+
+		$postManager = $this->_solidFramework->getService( 'postManager' );
+		$this->assertInstanceOf( $mockClassName, $postManager );
+	}
+
+	public function testSetup_With_Added_Service_Should_Have_Both_Default_And_Custom() {
+		$mockClassName = 'myMockClass';
+		$this->getMockBuilder( 'nonexistant' )
+		     ->setMockClassName( $mockClassName )
+		     ->getMock();
+
+		$this->_solidFramework->setup( 'myNamespace', array(
+			'services' => array(
+				'myCustomManager' => array(
+					'class'       => $mockClassName,
+					'constructor' => array(),
+				),
+			),
+		) );
+
+		$postManager   = $this->_solidFramework->getService( 'postManager' );
+		//$customManager = $this->_solidFramework->getService( 'myCustomManager' );
+		$this->assertInstanceOf( '\WordPressSolid\Post\Service\PostManager', $postManager );
+		//$this->assertInstanceOf( $mockClassName, $customManager );
+	}
+
 	public function testIsSetup_When_Namespace_Is_Not_Setup_Should_Return_False() {
 		$this->assertFalse( $this->_solidFramework->isSetup( 'non_existing_namespace' ) );
 	}
@@ -23,8 +69,7 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 	public function testIsSetup_When_Namespace_Is_Setup_Should_Return_True() {
 		$this->assertTrue( $this->_solidFramework->isSetup( SolidFramework::DEFAULT_NAMESPACE ) );
 
-		$namespace = 'myNamespace';
-		$this->_solidFramework->setup( $namespace, WP_SOLID_BASE_DIR . '/config/config.php' );
+		$namespace = $this->_setupTestNamespace();
 		$this->assertTrue( $this->_solidFramework->isSetup( $namespace ) );
 	}
 
@@ -37,8 +82,7 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 		$this->_solidFramework->switchTo( SolidFramework::DEFAULT_NAMESPACE );
 		$this->assertEquals( SolidFramework::DEFAULT_NAMESPACE, $this->_solidFramework->getCurrentNamespace() );
 
-		$namespace = 'myNamespace';
-		$this->_solidFramework->setup( $namespace, WP_SOLID_BASE_DIR . '/config/config.php');
+		$namespace = $this->_setupTestNamespace();
 		$this->_solidFramework->switchTo( $namespace );
 		$this->assertEquals( $namespace, $this->_solidFramework->getCurrentNamespace() );
 	}
@@ -49,5 +93,15 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 
 	public function testHasService_When_Service_Exists_Should_Return_True() {
 		$this->assertTrue( $this->_solidFramework->hasService( 'postManager' ) );
+	}
+
+	/**
+	 * @return string
+	 */
+	private function _setupTestNamespace() {
+		$namespace = 'myNamespace';
+		$this->_solidFramework->setup( $namespace );
+
+		return $namespace;
 	}
 }

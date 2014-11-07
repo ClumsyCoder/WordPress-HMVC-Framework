@@ -3,7 +3,7 @@
 namespace WordPressSolid\Post\Factory;
 
 use WordPressSolid\Date;
-use WordPressSolid\FactoryInterface;
+use WordPressSolid\Base\FactoryInterface;
 use WordPressSolid\Post\Collection\PostList;
 use WordPressSolid\Post\Model\Post;
 

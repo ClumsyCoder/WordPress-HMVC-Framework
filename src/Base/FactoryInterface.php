@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressSolid;
+namespace WordPressSolid\Base;
 
 interface FactoryInterface {
 	/**

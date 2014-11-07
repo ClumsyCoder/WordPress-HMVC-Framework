@@ -8,7 +8,7 @@ return array(
 		'postManager' => array(
 			'class'       => 'WordPressSolid\Post\Service\PostManager',
 			'constructor' => array(
-				'WordPressSolid\Post\Factory\PostFactory',
+				new WordPressSolid\Post\Factory\PostFactory(),
 			),
 		),
 	),

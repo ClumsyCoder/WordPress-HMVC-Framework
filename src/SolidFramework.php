@@ -22,11 +22,14 @@ final class SolidFramework {
 	private $_currentNamespace;
 	/** @var array List of workspaces */
 	private $_workspaces = array();
+	/** @var Config */
+	private $_defaultConfig;
 
 	/**
 	 * Setup the default workspace for the framework
 	 */
 	private function __construct() {
+		$this->_defaultConfig = new Config( WP_SOLID_BASE_DIR . '/config/config.php' );
 		$this->setup( self::DEFAULT_NAMESPACE, WP_SOLID_BASE_DIR . '/config/config.php' );
 	}
 
@@ -61,9 +64,11 @@ final class SolidFramework {
 	 * this for your plugin or theme.  This will create a copy of the framework for your given namespace allowing you
 	 * to modify configuration without clashing with other developers also using the framework.
 	 *
-	 * @param string $namespace The namespace for the plugin or theme
+	 * @param string       $namespace The namespace for the plugin or theme
+	 * @param string|array $config    Optional. The configuration to be used for this namespace.  Can be array config
+	 *                                or path to config.php file.
 	 */
-	public function setup( $namespace, $config ) {
+	public function setup( $namespace, $config = array() ) {
 		$this->_currentNamespace = $namespace;
 		$this->_setupWorkspace( $config );
 	}
@@ -119,30 +124,63 @@ final class SolidFramework {
 	/**
 	 * Setup workspace for the current namespace.  This will create a new container if one does not exist.  It will
 	 * throw an exception if the workspace is already in use
+	 *
+	 * @param string $config
 	 */
 	private function _setupWorkspace( $config ) {
 		if ( $this->isSetup( $this->_currentNamespace ) ) {
 			throw new \RuntimeException( "The namespace '{$this->_currentNamespace}' is already set up" );
 		}
 
-		$config                                        = new Config( $config );
 		$this->_workspaces[ $this->_currentNamespace ] = new Container();
+		$this->_setupServices( $this->_getConfig( $config ) );
+	}
 
-		foreach ( $config->getServices() as $serviceName => $service ) {
-			$this->_workspaces[ $this->_currentNamespace ]["creating_service_params"] = array(
+	/**
+	 * @param $config
+	 *
+	 * @return Config
+	 */
+	private function _getConfig( $config ) {
+		$configToUse = clone $this->_defaultConfig;
+		$newConfig   = new Config( $config );
+		$configToUse->merge( $newConfig );
+
+		return $configToUse;
+	}
+
+	/**
+	 * @param Config $configToUse
+	 */
+	private function _setupServices( Config $configToUse ) {
+		$services = $configToUse->getServices();
+		if ( $this->_currentNamespace == 'myNamespace' ) {
+			var_dump( $services );
+			die();
+		}
+
+		foreach ( $configToUse->getServices() as $serviceName => $service ) {
+
+
+			$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}_params"] = array(
 				'class'       => $service['class'],
 				'constructor' => $service['constructor'],
 			);
 
 			$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}"] = function ( $c ) {
-				$serviceParams   = $c['creating_service_params'];
+				$serviceParams = $c['service_serviceName_params'];
+
+
 				$className       = $serviceParams['class'];
 				$constructorArgs = $serviceParams['constructor'];
 				$reflector       = new \ReflectionClass( $className );
-
-				return $reflector->newInstanceArgs( $constructorArgs );
+				$constructor     = $reflector->getConstructor();
+				if ( is_null( $constructor ) ) {
+					return $reflector->newInstance();
+				} else {
+					return $reflector->newInstanceArgs( $constructorArgs );
+				}
 			};
 		}
 	}
-
 }
