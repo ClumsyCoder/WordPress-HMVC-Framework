@@ -1,8 +1,8 @@
 <?php
 
-namespace WordPressHMVC\Post\Factory;
+namespace WordPressSolid\Post\Factory;
 
-use WordPressHMVC\FactoryInterface;
+use WordPressSolid\FactoryInterface;
 
 class AttachmentFactory implements FactoryInterface {
 	/**

@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Post\Model;
+namespace WordPressSolid\Post\Model;
 
 /**
  * Class Format

@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Taxonomy\Model;
+namespace WordPressSolid\Taxonomy\Model;
 
 class Taxonomy {
 

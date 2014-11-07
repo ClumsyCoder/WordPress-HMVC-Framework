@@ -1,14 +1,14 @@
 <?php
 
-namespace WordPressHMVC\Post\Service;
+namespace WordPressSolid\Post\Service;
 
-use WordPressHMVC\Post\Collection\PostList;
-use WordPressHMVC\Post\Model\Post;
+use WordPressSolid\Post\Collection\PostList;
+use WordPressSolid\Post\Model\Post;
 
 class PostManagerTest extends \WP_UnitTestCase {
 	/** @var PostManager */
 	private $_postManager;
-	/** @var \WordPressHMVC\Post\Factory\PostFactory */
+	/** @var \WordPressSolid\Post\Factory\PostFactory */
 	private $_postMockFactory;
 
 	public function setUp() {

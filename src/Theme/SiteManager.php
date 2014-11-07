@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC;
+namespace WordPressSolid;
 
 /**
  * Class SiteManager

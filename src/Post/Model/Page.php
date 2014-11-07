@@ -1,8 +1,8 @@
 <?php
 
-namespace WordPressHMVC\Post\Model;
+namespace WordPressSolid\Post\Model;
 
-use WordPressHMVC\Post\Exception\PageNotExist;
+use WordPressSolid\Post\Exception\PageNotExist;
 
 class Page {
 	/** @var int */

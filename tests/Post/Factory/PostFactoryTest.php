@@ -1,12 +1,12 @@
 <?php
 
-namespace WordPressHMVC\Post\Factory;
+namespace WordPressSolid\Post\Factory;
 
-use WordPressHMVC\Post\Collection\PostList;
-use WordPressHMVC\Post\Model\Post;
+use WordPressSolid\Post\Collection\PostList;
+use WordPressSolid\Post\Model\Post;
 
 class PostFactoryTest extends \WP_UnitTestCase {
-	/** @var \WordPressHMVC\SiteManager */
+	/** @var \WordPressSolid\SiteManager */
 	private $_siteManagerMock;
 	/** @var PostFactory */
 	private $_postFactory;

@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Post\Collection;
+namespace WordPressSolid\Post\Collection;
 
 use Kozz\Components\Collection\Collection;
 

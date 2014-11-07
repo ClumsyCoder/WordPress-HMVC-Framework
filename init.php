@@ -1,10 +1,12 @@
 <?php
 /**
- * Plugin Name: WordPress HMVC Framework
+ * Plugin Name: WordPress SOLID
  * Plugin URI: http://github.com/ClumsyCoder/WordPress-HMVC-Framework
- * Description: An HMVC framework for building plugins and themes
+ * Description: An  framework for building plugins and themes
  * Author: Robert Burnfield
  * Author URI: http://github.com/ClumsyCoder
  */
+
+define( 'WP_SOLID_BASE_DIR', __DIR__ );
 
 require( __DIR__ . '/vendor/autoload.php' );

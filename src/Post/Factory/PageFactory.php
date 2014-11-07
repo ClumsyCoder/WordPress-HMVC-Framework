@@ -1,10 +1,10 @@
 <?php
 
-namespace WordPressHMVC\Post\Factory;
+namespace WordPressSolid\Post\Factory;
 
-use WordPressHMVC\FactoryInterface;
-use WordPressHMVC\Post\Collection\PageList;
-use WordPressHMVC\Post\Model\Page;
+use WordPressSolid\FactoryInterface;
+use WordPressSolid\Post\Collection\PageList;
+use WordPressSolid\Post\Model\Page;
 
 class PageFactory implements FactoryInterface {
 

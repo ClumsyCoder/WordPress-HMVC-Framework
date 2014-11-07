@@ -1,27 +1,17 @@
 <?php
 
-namespace WordPressHMVC\Post\Factory;
+namespace WordPressSolid\Post\Factory;
 
-use WordPressHMVC\FactoryInterface;
-use WordPressHMVC\Post\Collection\PostList;
-use WordPressHMVC\Post\Model\Post;
-use WordPressHMVC\SiteManager;
+use WordPressSolid\Date;
+use WordPressSolid\FactoryInterface;
+use WordPressSolid\Post\Collection\PostList;
+use WordPressSolid\Post\Model\Post;
 
 /**
  * Class PostFactory
  * @package WordPressHMVC\Post\Factory
  */
 class PostFactory implements FactoryInterface {
-	/** @var SiteManager */
-	private $_siteManager;
-
-	/**
-	 * @param SiteManager $siteManager
-	 */
-	public function __construct( SiteManager $siteManager ) {
-		$this->_siteManager = $siteManager;
-	}
-
 	/**
 	 * Create a post object from post data.  This post data can be a WP_Post object.
 	 *
@@ -79,11 +69,11 @@ class PostFactory implements FactoryInterface {
 		$post->setCommentCount( $wpPost->comment_count );
 		$post->setCommentStatus( $wpPost->comment_status );
 
-		$post->setPublicationDate( new \DateTime( $wpPost->post_date, $this->_siteManager->getTimezone() ) );
-		$post->setPublicationGmtDate( new \DateTime( $wpPost->post_date_gmt, $this->_siteManager->getGmtTimezone() ) );
+		$post->setPublicationDate( Date::getDate( $wpPost->post_date ) );
+		$post->setPublicationGmtDate( Date::getGmtDate( $wpPost->post_date_gmt ) );
 
-		$post->setModifiedDate( new \DateTime( $wpPost->post_modified, $this->_siteManager->getTimezone() ) );
-		$post->setModifiedGmtDate( new \DateTime( $wpPost->post_modified_gmt, $this->_siteManager->getGmtTimezone() ) );
+		$post->setModifiedDate( Date::getDate( $wpPost->post_modified ) );
+		$post->setModifiedGmtDate( Date::getGmtDate( $wpPost->post_modified_gmt ) );
 
 		return $post;
 	}

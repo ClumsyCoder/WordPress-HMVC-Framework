@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Post\Exception;
+namespace WordPressSolid\Post\Exception;
 
 class PageNotExist extends \RuntimeException {
 

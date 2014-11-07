@@ -1,12 +1,12 @@
 <?php
 
-namespace WordPressHMVC\Post\Service;
+namespace WordPressSolid\Post\Service;
 
-use WordPressHMVC\Post\Exception\GlobalPostNotSet;
-use WordPressHMVC\Post\Exception\PostNotExist;
-use WordPressHMVC\Post\Factory\PostFactory;
-use WordPressHMVC\Post\Model\Post;
-use WordPressHMVC\Post\Collection\PostList;
+use WordPressSolid\Post\Exception\GlobalPostNotSet;
+use WordPressSolid\Post\Exception\PostNotExist;
+use WordPressSolid\Post\Factory\PostFactory;
+use WordPressSolid\Post\Model\Post;
+use WordPressSolid\Post\Collection\PostList;
 
 /**
  * Class PostManager
@@ -30,7 +30,7 @@ class PostManager {
 	 * @param array|string $excludedTerms Optional. Array or comma-separated list of excluded term IDs.
 	 * @param string       $taxonomyName  Optional. Taxonomy Name, if $inSameTerm is true. Default 'category'.
 	 *
-	 * @return \WordPressHMVC\Post\Model\Post
+	 * @return \WordPressSolid\Post\Model\Post
 	 */
 	public function getPreviousPost( $inSameTerm = false, $excludedTerms = array(), $taxonomyName = 'category' ) {
 		return $this->_getAdjacentPost( $inSameTerm, $excludedTerms, true, $taxonomyName );
@@ -161,7 +161,7 @@ class PostManager {
 	 * @param bool   $start         Optional. Whether to retrieve first or last post.
 	 * @param string $taxonomy      Optional. Taxonomy, if $in_same_term is true. Default 'category'.
 	 *
-	 * @return \WordPressHMVC\Post\Model\Post
+	 * @return \WordPressSolid\Post\Model\Post
 	 */
 	private function _getBoundaryPost( $inSameTerm = false, $excludedTerms = array(), $start = true, $taxonomy = 'category' ) {
 		global $post;

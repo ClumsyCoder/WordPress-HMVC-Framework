@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Post\Service;
+namespace WordPressSolid\Post\Service;
 
 class AttachmentManager {
 }

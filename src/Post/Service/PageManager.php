@@ -1,10 +1,10 @@
 <?php
 
-namespace WordPressHMVC\Post\Service;
+namespace WordPressSolid\Post\Service;
 
-use WordPressHMVC\Post\Exception\PageNotExist;
-use WordPressHMVC\Post\Factory\PageFactory;
-use WordPressHMVC\Post\Model\Page;
+use WordPressSolid\Post\Exception\PageNotExist;
+use WordPressSolid\Post\Factory\PageFactory;
+use WordPressSolid\Post\Model\Page;
 
 class PageManager {
 	/** @var PageFactory */

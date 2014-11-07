@@ -1,5 +1,5 @@
 {
-    "name": "ClumsyCoder/WordPressHMVCFramework",
+    "name": "ClumsyCoder/WordPressSolidFramework",
     "version": "0.0.1",
     "authors": [
         {
@@ -8,7 +8,7 @@
         }
     ],
     "autoload": {
-        "psr-4": {"WordPressHMVC\\": "src/"}
+        "psr-4": {"WordPressSolid\\": "src/"}
     },
     "require": {
         "pimple/pimple": "~3.0",

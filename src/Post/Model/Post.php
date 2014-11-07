@@ -1,9 +1,9 @@
 <?php
 
-namespace WordPressHMVC\Post\Model;
+namespace WordPressSolid\Post\Model;
 
-use WordPressHMVC\Post\Exception\FormatNotSet;
-use WordPressHMVC\Post\Exception\PostNotExist;
+use WordPressSolid\Post\Exception\FormatNotSet;
+use WordPressSolid\Post\Exception\PostNotExist;
 
 /**
  * Class Post

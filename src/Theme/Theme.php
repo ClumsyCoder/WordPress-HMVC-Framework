@@ -1,8 +1,8 @@
 <?php
 
-namespace WordPressHMVC;
+namespace WordPressSolid;
 
-use WordPressHMVC\Theme\ImageSize;
+use WordPressSolid\Theme\ImageSize;
 
 /**
  * Class Theme

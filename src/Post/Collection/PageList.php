@@ -1,9 +1,9 @@
 <?php
 
-namespace WordPressHMVC\Post\Collection;
+namespace WordPressSolid\Post\Collection;
 
 use Kozz\Components\Collection\Collection;
-use WordPressHMVC\Post\Model\Page;
+use WordPressSolid\Post\Model\Page;
 
 /**
  * Class PageList

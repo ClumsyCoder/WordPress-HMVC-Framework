@@ -1,6 +1,6 @@
 <?php
 
-namespace WordPressHMVC\Theme;
+namespace WordPressSolid\Theme;
 
 class SidebarManager {
 	public function showSidebar( $name ) {
