@@ -2,7 +2,9 @@
 
 namespace WordPressSolid;
 
-use Pimple\Container;
+use WordPressSolid\Config\Config;
+use WordPressSolid\Config\Factory as ConfigFactory;
+use WordPressSolid\DI\Container;
 
 /**
  * Class SolidFramework
@@ -29,7 +31,7 @@ final class SolidFramework {
 	 * Setup the default workspace for the framework
 	 */
 	private function __construct() {
-		$this->_defaultConfig = new Config( WP_SOLID_BASE_DIR . '/config/config.php' );
+		$this->_defaultConfig = ConfigFactory::fromFile( WP_SOLID_BASE_DIR . '/config/config.php', true );
 		$this->setup( self::DEFAULT_NAMESPACE, WP_SOLID_BASE_DIR . '/config/config.php' );
 	}
 
@@ -132,7 +134,8 @@ final class SolidFramework {
 			throw new \RuntimeException( "The namespace '{$this->_currentNamespace}' is already set up" );
 		}
 
-		$this->_workspaces[ $this->_currentNamespace ] = new Container();
+		$this->_workspaces[ $this->_currentNamespace ]                   = new Container();
+		$this->_workspaces[ $this->_currentNamespace ]['solidFramework'] = $this;
 		$this->_setupServices( $this->_getConfig( $config ) );
 	}
 
@@ -143,44 +146,80 @@ final class SolidFramework {
 	 */
 	private function _getConfig( $config ) {
 		$configToUse = clone $this->_defaultConfig;
-		$newConfig   = new Config( $config );
+		$newConfig   = is_array( $config ) ? new Config( $config ) : ConfigFactory::fromFile( $config, true );
 		$configToUse->merge( $newConfig );
 
 		return $configToUse;
 	}
 
 	/**
+	 * Setup the services for a given configuration in the current namespace
+	 *
 	 * @param Config $configToUse
 	 */
 	private function _setupServices( Config $configToUse ) {
-		$services = $configToUse->getServices();
-		if ( $this->_currentNamespace == 'myNamespace' ) {
-			var_dump( $services );
-			die();
+		if ( ! empty( $configToUse->services ) ) {
+			foreach ( $configToUse->services as $serviceName => $serviceOptions ) {
+				$this->_assertServiceOptions( $serviceOptions, $serviceName );
+				$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}_options"] = $serviceOptions;
+
+				/**
+				 * @param Container $c
+				 *
+				 * @return string
+				 */
+				$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}"] = function ( $c ) {
+					/** @var SolidFramework $solidFramework */
+					$options        = $c[ $c->getLastCalledId() . '_options' ];
+					$solidFramework = $c['solidFramework'];
+
+					return $solidFramework->_createInstance( $options->class, $options->params );
+				};
+			}
+		}
+	}
+
+	/**
+	 * Assert the service options are valid
+	 *
+	 * @param $serviceOptions
+	 * @param $serviceName
+	 *
+	 * @return mixed
+	 */
+	private function _assertServiceOptions( $serviceOptions, $serviceName ) {
+		if ( ! isset( $serviceOptions['class'] ) ) {
+			throw new \RuntimeException( "No class provided for the service {$serviceName}" );
+		} elseif ( ! class_exists( $serviceOptions['class'] ) ) {
+			throw new \RuntimeException( "The class {$serviceOptions['class']} does not exist" );
 		}
 
-		foreach ( $configToUse->getServices() as $serviceName => $service ) {
+		if ( ! isset( $serviceOptions['params'] ) ) {
+			throw new \RuntimeException( "No params provided for the service {$serviceName}" );
+		}
+	}
 
-
-			$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}_params"] = array(
-				'class'       => $service['class'],
-				'constructor' => $service['constructor'],
-			);
-
-			$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}"] = function ( $c ) {
-				$serviceParams = $c['service_serviceName_params'];
-
-
-				$className       = $serviceParams['class'];
-				$constructorArgs = $serviceParams['constructor'];
-				$reflector       = new \ReflectionClass( $className );
-				$constructor     = $reflector->getConstructor();
-				if ( is_null( $constructor ) ) {
-					return $reflector->newInstance();
+	/**
+	 * Create an instance for the given class name and parameters
+	 *
+	 * @param $className
+	 * @param $params
+	 *
+	 * @return object
+	 */
+	private function _createInstance( $className, $params ) {
+		$reflection = new \ReflectionClass( $className );
+		if ( ! empty( $params ) ) {
+			$constructorArgs = array();
+			foreach ( $params as $param ) {
+				if ( isset( $param['type'] ) && $param['type'] == 'object' ) {
+					$constructorArgs[] = $this->_createInstance( $param['class'], $param['params'] );
 				} else {
-					return $reflector->newInstanceArgs( $constructorArgs );
+					$constructorArgs[] = $param;
 				}
-			};
+			}
 		}
+
+		return ! empty( $constructorArgs ) ? $reflection->newInstanceArgs( $constructorArgs ) : $reflection->newInstance();
 	}
 }
