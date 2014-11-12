@@ -2,7 +2,7 @@
 
 namespace WordPressSolid\Post\Factory;
 
-use WordPressSolid\FactoryInterface;
+use WordPressSolid\Base\FactoryInterface;
 use WordPressSolid\Post\Collection\PageList;
 use WordPressSolid\Post\Model\Page;
 

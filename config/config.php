@@ -15,5 +15,15 @@ return array(
 				),
 			),
 		),
+		'pageManager' => array(
+			'class'  => '\WordPressSolid\Post\Service\PageManager',
+			'params' => array(
+				array(
+					'type'   => 'object',
+					'class'  => '\WordPressSolid\Post\Factory\PageFactory',
+					'params' => array(),
+				),
+			),
+		),
 	),
 );

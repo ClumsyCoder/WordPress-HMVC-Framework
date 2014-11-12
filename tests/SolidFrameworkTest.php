@@ -82,8 +82,10 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 
 		$postManager   = $this->_solidFramework->getService( 'postManager' );
 		$customManager = $this->_solidFramework->getService( 'myCustomManager' );
+		$pageManager   = $this->_solidFramework->getService( 'pageManager' );
 		$this->assertInstanceOf( '\WordPressSolid\Post\Service\PostManager', $postManager );
 		$this->assertInstanceOf( $mockClassName, $customManager );
+		$this->assertInstanceOf( '\WordPressSolid\Post\Service\PageManager', $pageManager );
 	}
 
 	public function testIsSetup_When_Namespace_Is_Not_Setup_Should_Return_False() {
