@@ -31,14 +31,38 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 		$this->_solidFramework->setup( 'myNamespace', array(
 			'services' => array(
 				'postManager' => array(
-					'class'       => $mockClassName,
-					'constructor' => array(),
+					'class'  => $mockClassName,
+					'params' => null,
 				),
 			),
 		) );
 
 		$postManager = $this->_solidFramework->getService( 'postManager' );
 		$this->assertInstanceOf( $mockClassName, $postManager );
+	}
+
+	public function testSetup_With_Custom_Config_Override_Post_Manager_Constructor_Arguments_Should_Use_New_Constructor_Args() {
+		$this->getMockBuilder( '\WordPressSolid\Post\Factory\PostFactory' )
+		     ->setMockClassName( 'myNewFactory' )
+		     ->getMock();
+
+		$this->_solidFramework->setup( 'myNamespace', array(
+			'services' => array(
+				'postManager' => array(
+					'class'  => '\WordPressSolid\Post\Service\PostManager',
+					'params' => array(
+						array(
+							'type'   => 'object',
+							'class'  => 'myNewFactory',
+							'params' => array(),
+						),
+					),
+				),
+			),
+		) );
+
+		$postManager = $this->_solidFramework->getService( 'postManager' );
+		$this->assertInstanceOf( '\WordPressSolid\Post\Service\PostManager', $postManager );
 	}
 
 	public function testSetup_With_Added_Service_Should_Have_Both_Default_And_Custom() {
@@ -50,16 +74,16 @@ class SolidFrameworkTest extends \PHPUnit_Framework_TestCase {
 		$this->_solidFramework->setup( 'myNamespace', array(
 			'services' => array(
 				'myCustomManager' => array(
-					'class'       => $mockClassName,
-					'constructor' => array(),
+					'class'  => $mockClassName,
+					'params' => null,
 				),
 			),
 		) );
 
 		$postManager   = $this->_solidFramework->getService( 'postManager' );
-		//$customManager = $this->_solidFramework->getService( 'myCustomManager' );
+		$customManager = $this->_solidFramework->getService( 'myCustomManager' );
 		$this->assertInstanceOf( '\WordPressSolid\Post\Service\PostManager', $postManager );
-		//$this->assertInstanceOf( $mockClassName, $customManager );
+		$this->assertInstanceOf( $mockClassName, $customManager );
 	}
 
 	public function testIsSetup_When_Namespace_Is_Not_Setup_Should_Return_False() {

@@ -169,11 +169,12 @@ final class SolidFramework {
 				 * @return string
 				 */
 				$this->_workspaces[ $this->_currentNamespace ]["service_{$serviceName}"] = function ( $c ) {
+					/** @var Config $options */
+					$options = $c[ $c->getLastCalledId() . '_options' ];
 					/** @var SolidFramework $solidFramework */
-					$options        = $c[ $c->getLastCalledId() . '_options' ];
 					$solidFramework = $c['solidFramework'];
 
-					return $solidFramework->_createInstance( $options->class, $options->params );
+					return $solidFramework->_createInstance( $options->class, isset( $options->params ) ? $options->params : array() );
 				};
 			}
 		}
@@ -192,10 +193,6 @@ final class SolidFramework {
 			throw new \RuntimeException( "No class provided for the service {$serviceName}" );
 		} elseif ( ! class_exists( $serviceOptions['class'] ) ) {
 			throw new \RuntimeException( "The class {$serviceOptions['class']} does not exist" );
-		}
-
-		if ( ! isset( $serviceOptions['params'] ) ) {
-			throw new \RuntimeException( "No params provided for the service {$serviceName}" );
 		}
 	}
 
